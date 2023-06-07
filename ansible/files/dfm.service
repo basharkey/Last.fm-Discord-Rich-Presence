@@ -1,0 +1,13 @@
+[Unit]
+Description=Sync Last.fm scrobbling with Discord
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/dfm
+EnvironmentFile=%h/.config/dfm/env
+ExecStart=/usr/bin/xvfb-run /opt/dfm/dfm.sh
+
+[Install]
+WantedBy=default.target

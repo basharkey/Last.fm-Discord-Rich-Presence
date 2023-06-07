@@ -1,0 +1,107 @@
+---
+- hosts: all
+  tasks:
+    - name: Install apt dependencies
+      apt:
+        name:
+          - git
+          - xserver-xorg-core
+          - xvfb
+          - flatpak
+          - python3-pip
+          - python3-tk
+        update_cache: yes
+        state: present
+
+    - name: Create dfm user
+      user:
+        name: dfm
+        create_home: yes
+        shell: /bin/bash
+
+    - name: Create Discord Flatpak config dir
+      file:
+        path: "/home/dfm/.var/app/com.discordapp.Discord/config/discord/Local Storage"
+        state: directory
+        mode: '0755'
+        owner: dfm
+        group: dfm
+
+    # idk if you need to whole config or just leveldb (maybe even less)
+    - name: Copy Discord config
+      copy:
+        src: leveldb
+        dest: "/home/dfm/.var/app/com.discordapp.Discord/config/discord/Local Storage"
+        owner: dfm
+        group: dfm
+
+    # method: user installed it as root???
+    - name: Enable Flathub repository
+      flatpak_remote:
+        name: flathub
+        state: present
+        flatpakrepo_url: "https://flathub.org/repo/flathub.flatpakrepo"
+      become_user: dfm
+
+    - name: Install Discord
+      flatpak:
+        name: com.discordapp.Discord
+        state: present
+      become_user: dfm
+
+    - name: Clone Last.fm Discord rich presence repo
+      git:
+        repo: https://github.com/basharkey/Last.fm-Discord-Rich-Presence.git
+        dest: /opt/dfm
+
+    - name: Create dfm config dir
+      file:
+        path: /home/dfm/.config/dfm
+        state: directory
+        mode: '0755'
+        owner: dfm
+        group: dfm
+
+    - name: Template dfm env config
+      template:
+        src: env.j2
+        dest: /home/dfm/.config/dfm/env
+        mode: '0644'
+        owner: dfm
+        group: dfm
+
+    - name: Copy dfm script
+      copy:
+        src: dfm.sh
+        dest: /opt/dfm/dfm.sh
+        mode: '0755'
+        owner: root
+        group: root
+    
+    - name: Create systemd user dir
+      file:
+        path: /home/dfm/.config/systemd/user
+        state: directory
+        mode: '0755'
+        owner: dfm
+        group: dfm
+
+    - name: Copy dfm systemd service
+      copy:
+        src: dfm.service
+        dest: /home/dfm/.config/systemd/user/dfm.service
+        mode: '0644'
+        owner: dfm
+        group: dfm
+
+    - name: Start and enable dfm service
+      systemd:
+        daemon_reload: yes
+        name: dfm.service
+        state: started
+        enabled: yes
+        scope: user
+      become_user: dfm
+
+    - name: Allow dfm user services to run on boot
+      command: loginctl enable-linger dfm
