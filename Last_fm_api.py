@@ -1,6 +1,7 @@
 import pylast
 import time
 import DiscordRPC as RPC
+import os
 
 try:
     API_KEY = os.environ['LASTFM_API_KEY']
