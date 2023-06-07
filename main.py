@@ -45,7 +45,6 @@ try:
 except KeyError:
     print("Please set LASTFM_USER environment variable")
 
-username = f.read().rstrip()
 print("Last.fm username: "+username)
 User = LastFmUser(username, 2)
 
