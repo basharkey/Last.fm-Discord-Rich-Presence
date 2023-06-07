@@ -41,9 +41,9 @@ except FileNotFoundError as identifier:
     messagebox.showerror('Error','Assets folder not found!')
 
 try:
-    f = open('username.txt', 'r')
-except FileNotFoundError as identifier:
-    messagebox.showerror('Error','File "username.txt" not found!')
+    username = os.environ['LASTFM_USER']
+except KeyError:
+    print("Please set LASTFM_USER environment variable")
 
 username = f.read().rstrip()
 print("Last.fm username: "+username)

@@ -2,8 +2,15 @@ import pylast
 import time
 import DiscordRPC as RPC
 
-API_KEY = "4a47d43987a47ead6689e15009d099b4"
-API_SECRET = "4f79bc1115694a8b123f56c88aef6be4"
+try:
+    API_KEY = os.environ['LASTFM_API_KEY']
+except KeyError:
+    print("Please set LASTFM_API_KEY environment variable")
+
+try:
+    API_SECRET = os.environ['LASTFM_API_SECRET']
+except KeyError:
+    print("Please set LASTFM_API_SECRET environment variable")
 
 network = pylast.LastFMNetwork(api_key=API_KEY, api_secret=API_SECRET)
 
