@@ -46,7 +46,7 @@ except KeyError:
     print("Please set LASTFM_USER environment variable")
 
 print("Last.fm username: "+username)
-User = LastFmUser(username, 2)
+User = LastFmUser(username, 30)
 
 menu_icon = Menu(item('User: '+username, None),
                  item('Enable Rich Presence', toggle_rpc,
