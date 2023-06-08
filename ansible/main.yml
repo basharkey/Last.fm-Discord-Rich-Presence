@@ -4,6 +4,7 @@
     - name: Install apt dependencies
       apt:
         name:
+          - sudo
           - git
           - xserver-xorg-core
           - xvfb
@@ -41,18 +42,28 @@
         name: flathub
         state: present
         flatpakrepo_url: "https://flathub.org/repo/flathub.flatpakrepo"
+        method: user
+      become: yes
       become_user: dfm
 
     - name: Install Discord
       flatpak:
         name: com.discordapp.Discord
         state: present
+        method: user
+      become: yes
       become_user: dfm
 
     - name: Clone Last.fm Discord rich presence repo
       git:
         repo: https://github.com/basharkey/Last.fm-Discord-Rich-Presence.git
         dest: /opt/dfm
+
+    - name: Install Last.fm Discord rich presence pip requirements
+      pip:
+        requirements: /opt/dfm/requirements.txt
+      become: yes
+      become_user: dfm
 
     - name: Create dfm config dir
       file:
@@ -94,6 +105,9 @@
         owner: dfm
         group: dfm
 
+    - name: Allow dfm user services to run on boot
+      command: loginctl enable-linger dfm
+
     - name: Start and enable dfm service
       systemd:
         daemon_reload: yes
@@ -101,7 +115,5 @@
         state: started
         enabled: yes
         scope: user
+      become: yes
       become_user: dfm
-
-    - name: Allow dfm user services to run on boot
-      command: loginctl enable-linger dfm
