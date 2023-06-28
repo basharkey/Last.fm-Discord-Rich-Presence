@@ -11,6 +11,7 @@
           - flatpak
           - python3-pip
           - python3-tk
+          - x11vnc
         update_cache: yes
         state: present
 
@@ -112,7 +113,7 @@
       systemd:
         daemon_reload: yes
         name: dfm.service
-        state: started
+        state: restarted
         enabled: yes
         scope: user
       become: yes
